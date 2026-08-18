@@ -9,7 +9,7 @@
 
 void delay(void)
 {
-	for(uint32_t i = 0; i<500000; i++);
+	for(uint32_t i = 0; i<500000/2; i++);
 }
 
 int main(void)
@@ -49,6 +49,7 @@ int main(void)
 
 void EXTI0_IRQHandler(void)
 {
+	delay();
 	GPIO_IRQHandling(GPIO_PIN_NO_0);
 	GPIO_ToggleOutputPin(GPIOD, GPIO_PIN_NO_14);
 }
