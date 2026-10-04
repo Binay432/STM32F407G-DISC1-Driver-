@@ -73,7 +73,50 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi)
 	*
  *
  */
-void SPI_Init(SPI_Handle_t *pSPIHandle);
+void SPI_Init(SPI_Handle_t *pSPIHandle)
+{
+	// Configure the SPI_CR1
+	// Temporary register to store settings
+	uint32_t tempreg = 0;
+
+	// 1. configure the device mode
+	tempreg |= pSPIHandle->SPIConfig.SPI_DeviceMode << 2;
+
+	// 2. configure the bus
+	if(pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_FD)
+	{
+		// BIDI mode should be cleared
+		tempreg &= ~( 1<< 15);
+	}else if (pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_HD)
+	{
+		// BIDI mode(15 bit of SPI_CR1) should be set
+		tempreg |= ( 1<<15 );
+	}else if (pSPIHandle->SPIConfig.SPI_BusConfig == SPI_BUS_CONFIG_SIMPLEX_RXONLY)
+	{
+		// BIDI mode should be cleared
+		tempreg &= ~( 1<< 15);
+
+		// RXONLY bit(10) must be set
+		tempreg |= ( 1<<10 );
+	}
+
+	// 3. configure the speed
+	tempreg |= pSPIHandle->SPIConfig.SPI_SclkSpeed << 3;
+
+	// 4. configure the data frame format
+	tempreg |= pSPIHandle->SPIConfig.SPI_DFF << 11;
+
+	// 5. configure the cpol
+	tempreg |= pSPIHandle->SPIConfig.SPI_CPOL << 1;
+
+	// 6. configure the cpha
+	tempreg |= pSPIHandle->SPIConfig.SPI_CPHA << 0;
+
+	// 7. configure the ssm
+	tempreg |= pSPIHandle->SPIConfig.SPI_SSM << 9;
+
+	pSPIHandle->pSPIx->CR1 = tempreg;
+}
 void SPI_DeInit(SPI_RegDef_t *pSPIx);
 
 /*
