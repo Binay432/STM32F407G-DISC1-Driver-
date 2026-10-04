@@ -341,7 +341,12 @@ typedef struct
 #define I2C2_PCLK_DI()	(RCC->APB1ENR &= ~(1<<22));
 #define I2C3_PCLK_DI()	(RCC->APB1ENR &= ~(1<<23));
 
-
+/*
+ * Clock Disable Macros for SPIx peripherals
+ */
+#define SPI1_PCLK_DI()	(RCC->APB2ENR &= ~(1<<12));
+#define SPI2_PCLK_DI()	(RCC->APB1ENR &= ~(1<<14));
+#define SPI3_PCLK_DI()	(RCC->APB1ENR &= ~(1<<15));
 /*
  * Clock Disable Macros for USARTx peripherals
 */
@@ -420,5 +425,6 @@ typedef struct
 
 
 #include "stm32f407xx_gpio_driver.h"
+#include "stm32f4077xx_spi_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */
