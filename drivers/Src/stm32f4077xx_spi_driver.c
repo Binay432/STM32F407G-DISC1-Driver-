@@ -122,6 +122,45 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 void SPI_DeInit(SPI_RegDef_t *pSPIx);
 
 /*
+ * SPI_PeripheralControl
+*****************************************************************
+	* @fu				-
+	*
+	* @brief 			-
+	*
+	* @param[in]		-
+	*
+	* @param[in]		-
+	*
+	* @return			- None
+	*
+	* @Note 			- None
+	*
+ *
+ */
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+	if(EnOrDi == ENABLE)
+	{
+		pSPIx->CR1 |= ( 1 << SPI_CR1_SPE);
+	}else
+	{
+		pSPIx->CR1 &= ~( 1 << SPI_CR1_SPE);
+	}
+}
+
+
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi)
+{
+	if(EnOrDi == ENABLE)
+	{
+		pSPIx->CR1 |= ( 1 << SPI_CR1_SSI);
+	}else
+	{
+		pSPIx->CR1 &= ~( 1 << SPI_CR1_SSI);
+	}
+}
+/*
  * Data Send and Receive
  * Can have 3 different methodologies (Polling, Interrupt, DMA)
  * pTxBuffer --> Address of the tx data buffer

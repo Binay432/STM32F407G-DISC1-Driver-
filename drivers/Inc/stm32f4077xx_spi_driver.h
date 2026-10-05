@@ -74,7 +74,7 @@ typedef struct
  * @SPI_CPOL: SPI1_CPOL: BIT 1
  */
 #define SPI_CPOL_HIGH		1
-#define SPI_CHOL_LOW 		0
+#define SPI_CPOL_LOW 		0
 
 /*
  * @SPI_CPHA: SPI1_CR1: BIT 0
@@ -136,7 +136,8 @@ void SPI_IRQHandling(SPI_Handle_t *pHandle); // Interrupt handling
 /*
  * Other Peripheral Control APIs
  */
-
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
 
 
 

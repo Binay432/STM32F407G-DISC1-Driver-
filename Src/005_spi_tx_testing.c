@@ -23,6 +23,7 @@
  * 			: ALT Function mode: 5
  */
 #include "stm32f407xx.h"
+#include <string.h>
 
 
 void SPI2_GPIOInits(void)
@@ -71,11 +72,27 @@ void SPI2_Inits(void)
 }
 int main(void)
 {
+	char user_data[] = "Hello World!";
 	// function is used to initialize the GPIO pins to behave as SPI2 pins
 	SPI2_GPIOInits();
 
 	// peripheral configuration
 	SPI2_Inits();
+
+	// this make NSS signal HIGH internally and avoid the MODF error
+	SPI_SSIConfig(SPI2, ENABLE);
+	// Just initializing the SPI doesn't mean the spi is enabled ,
+	//for this it has dedicated bit (bit 6) ,
+	//cz if it's enable while initializing , spi will be busy for communication , rather that configuration .
+	SPI_PeriClockControl(SPI2, ENABLE);
+
+	// Send the data
+	SPI_SendData(SPI2, (uint8_t*)user_data,strlen(user_data));
+
+	// Disable the SPI2 peripheral
+	SPI_PeriClockControl(SPI2, DISABLE);
+
+	while(1);
 
 	return 0;
 }
