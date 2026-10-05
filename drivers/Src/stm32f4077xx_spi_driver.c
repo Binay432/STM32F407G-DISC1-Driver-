@@ -78,6 +78,8 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	// Configure the SPI_CR1
 	// Temporary register to store settings
 	uint32_t tempreg = 0;
+	// Enable the spi peripheral clock
+	SPI_PeriClockControl(pSPIHandle->pSPIx, ENABLE);
 
 	// 1. configure the device mode
 	tempreg |= pSPIHandle->SPIConfig.SPI_DeviceMode << SPI_CR1_MSTR ;
