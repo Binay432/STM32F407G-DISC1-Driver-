@@ -136,11 +136,45 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
 	*
 	* @return			- None
 	*
-	* @Note 			- None
+	* @Note 			- This is a blocking call cz of 2 while loop
 	*
  */
 
-void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len);
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName)
+{
+	if (pSPIx->SR & FlagName){
+		return FLAG_SET;
+	}
+	return FLAG_RESET;
+}
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
+{
+	while  (Len > 0)
+	{
+		// 1. wait until TXE is set
+		// if it's set as 1, (pSPIx->SR & (1<<1)) will be 0
+				//		while(!(pSPIx->SR & (1<<1)));
+		while(SPI_GetFlagStatus(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);
+
+		// 2. Check the bit 16 bit in CR1
+			// Logic : Check the DFF bit (11) in SPI_CR1 register
+		if((pSPIx->CR1 & (1<<SPI_CR1_DFF)))
+		{
+			// 16 bit DFF
+			pSPIx->DR = *((uint16_t*)pTxBuffer);
+			Len-- ;
+			Len--;
+			(uint16_t*)pTxBuffer++;
+		}else
+		{
+			// 8 bit DFF
+			pSPIx->DR = *pTxBuffer;
+			Len--;
+			pTxBuffer++;
+		}
+
+	}
+}
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
 
 
