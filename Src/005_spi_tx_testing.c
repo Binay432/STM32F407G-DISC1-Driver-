@@ -1,0 +1,81 @@
+
+/*
+ * A test code just to test the spi tx
+ * Problem : Test the spi_senddata api to send the string 'Hello World'
+ * and use the below configuration
+ * SPI-2 Master mode
+ * SCLK = max possible
+ * DFF = 0 and DFF = 1
+ *
+ *
+ *
+ * Solution  : Pin required?
+ * 				: Since no slave management, only MOSI and sck will be needed
+ *
+ *
+ * Steps :
+ * 		1. Find the GPIO pins over which SPI2 Can communicate
+ * 			: 1. Consult the data sheet
+ * 			: 2. PB14 ---> MISO
+ * 			: 3. PB15 ---> MOSI
+ * 			: 4. PB13 ---> SCLK
+ * 			: 5. PB12 ---> NSS
+ * 			: ALT Function mode: 5
+ */
+#include "stm32f407xx.h"
+
+
+void SPI2_GPIOInits(void)
+{
+	GPIO_Handle_t SPIPins;
+
+	SPIPins.pGPIOx = GPIOB;
+	SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
+	SPIPins.GPIO_PinConfig.GPIO_PinAltFunMode = 5;
+	SPIPins.GPIO_PinConfig.GPIO_Pin0Ptype = GPIO_OP_TYPE_PP;
+	SPIPins.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD; // OPTIONAL
+	SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
+
+	//SCLK
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_13;
+	GPIO_Init(&SPIPins);
+
+	//MISO
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
+	GPIO_Init(&SPIPins);
+
+	//MOSI
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_15;
+	GPIO_Init(&SPIPins);
+
+	//NSS
+	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12;
+	GPIO_Init(&SPIPins);
+}
+
+void SPI2_Inits(void)
+{
+	SPI_Handle_t SPI2handle;
+
+	SPI2handle.pSPIx = SPI2;
+	SPI2handle.SPIConfig.SPI_BusConfig = SPI_BUS_CONFIG_FD;
+	SPI2handle.SPIConfig.SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;
+	SPI2handle.SPIConfig.SPI_SclkSpeed = SPI_SCLK_SPEED_DIV2; // 8MHz clk
+	SPI2handle.SPIConfig.SPI_DFF = SPI_DFF_8ITS;
+	SPI2handle.SPIConfig.SPI_CPOL = SPI_CPOL_LOW ;
+	SPI2handle.SPIConfig.SPI_CPHA = SPI_CPHA_LOW;
+	SPI2handle.SPIConfig.SPI_SSM = SPI_SSM_EN;	//software slave management enabled for NSS pin as for this test we have no slave
+
+
+	SPI_Init(&SPI2handle);
+}
+int main(void)
+{
+	// function is used to initialize the GPIO pins to behave as SPI2 pins
+	SPI2_GPIOInits();
+
+	// peripheral configuration
+	SPI2_Inits();
+
+	return 0;
+}
